@@ -123,6 +123,37 @@ def handle_callback_query(call):
         # تەستىق مۇۋەپپەقىيەتلىك بولغانلىق ئەسكەرتمىسى (Toast)
         bot.answer_callback_query(call.id, text=f"مۇۋەپپەقىيەتلىك: {status_text}!")
 
+        # 6) ئابونىتقا (خېرىدارغا) تېلېگرامما ئارقىلىق دەرھال ئۇقتۇرۇش قىلىش
+        contact_raw = current_record.get("contact_info")
+        pubg_id_val = current_record.get("pubg_id")
+        amount_val = current_record.get("amount")
+
+        if contact_raw:
+            # سان شەكلىدىكى Telegram Chat ID ياكى نومۇرنى تەكشۈرۈش
+            clean_chat_id = "".join(filter(str.isdigit, str(contact_raw)))
+            if clean_chat_id and len(clean_chat_id) >= 6:
+                try:
+                    if new_status == "approved":
+                        user_notice = (
+                            f"🎉 <b>ھۆرمەتلىك ئابونت، نۇپۇز زاكازىڭىز تەستىقلاندى!</b>\n\n"
+                            f"🎮 <b>PUBG ID:</b> <code>{pubg_id_val}</code>\n"
+                            f"💎 <b>نۇپۇز سانى:</b> <b>+{int(amount_val):,}</b>\n"
+                            f"📌 <b>ھالىتى:</b> ✅ تەستىقلاندى\n"
+                            f"⏰ <b>ۋاقتى:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+                            f"رەھمەت، نۇپۇز ئويۇن ھېساباتىڭىزغا كۈچكە ئىگە بولدى! ✨"
+                        )
+                    else:
+                        user_notice = (
+                            f"⚠️ <b>ھۆرمەتلىك ئابونت، نۇپۇز زاكازىڭىز رەت قىلىندى!</b>\n\n"
+                            f"🎮 <b>PUBG ID:</b> <code>{pubg_id_val}</code>\n"
+                            f"💎 <b>نۇپۇز سانى:</b> {int(amount_val):,}\n"
+                            f"📌 <b>ھالىتى:</b> ❌ رەت قىلىندى\n\n"
+                            f"مەسىلە كۆرۈلسە مەسئۇل خادىم بىلەن ئالاقىلىشىڭ: @SELilo7"
+                        )
+                    bot.send_message(chat_id=clean_chat_id, text=user_notice, parse_mode="HTML")
+                except Exception as notify_err:
+                    print(f"ئابونىتقا ئۇچۇر ئەۋەتىشتە خاتالىق: {notify_err}", file=sys.stderr)
+
     except Exception as e:
         print(f"خاتالىق كۆرۈلدى: {e}", file=sys.stderr)
         bot.answer_callback_query(call.id, text=f"خاتالىق كۆرۈلدى: {str(e)}", show_alert=True)
