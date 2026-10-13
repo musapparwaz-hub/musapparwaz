@@ -47,12 +47,13 @@
       letter-spacing: 0;
       background-color: #0B0E14;
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(245, 166, 35, 0.12) 0%, transparent 60%),
-        radial-gradient(circle at 80% 100%, rgba(255, 87, 34, 0.08) 0%, transparent 50%);
+        radial-gradient(circle at 50% 0%, rgba(245, 166, 35, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 80% 100%, rgba(255, 87, 34, 0.1) 0%, transparent 50%);
       background-attachment: fixed;
       -webkit-tap-highlight-color: transparent;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
     h1, h2, h3, .font-title {
       font-family: 'Noto Kufi Arabic', 'UKIJ Tuz Tom', 'Chakra Petch', sans-serif;
@@ -61,13 +62,66 @@
     .game-title {
       font-family: 'Chakra Petch', 'Noto Kufi Arabic', sans-serif;
     }
+
+    /* ئالماس ۋە نۇر بەلگىلىرىنىڭ مىدىرلاش ئانېماتسىيەسى */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+      50% { transform: translateY(-12px) rotate(8deg) scale(1.08); }
+    }
+    @keyframes floatReverse {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+      50% { transform: translateY(10px) rotate(-8deg) scale(1.05); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.03); }
+    }
+    @keyframes borderGlowPulse {
+      0%, 100% { border-color: rgba(245, 166, 35, 0.3); box-shadow: 0 0 15px rgba(245, 166, 35, 0.2); }
+      50% { border-color: rgba(255, 87, 34, 0.6); box-shadow: 0 0 25px rgba(255, 87, 34, 0.35); }
+    }
+
+    .animate-float-1 { animation: floatSlow 3.8s ease-in-out infinite; }
+    .animate-float-2 { animation: floatReverse 4.6s ease-in-out infinite; }
+    .animate-float-3 { animation: floatSlow 5.2s ease-in-out infinite 1s; }
+    .animate-float-4 { animation: floatReverse 4.2s ease-in-out infinite 0.5s; }
+    .animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+    .card-animated-border { animation: borderGlowPulse 4s ease-in-out infinite; }
   </style>
 </head>
-<body class="text-slate-200 min-h-screen flex flex-col items-center justify-start p-4 pb-12 antialiased selection:bg-amber-500 selection:text-black">
+<body class="text-slate-200 min-h-screen flex flex-col items-center justify-start p-4 pb-12 antialiased selection:bg-amber-500 selection:text-black relative">
+
+  <!-- تەگلىكتىكى لەيلەپ مىدىرلاپ تۇرىدىغان ئالماس ۋە بەلگىلەر (Floating Gaming Elements) -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <!-- ئالماس 1 -->
+    <div class="absolute top-12 left-6 text-2xl sm:text-3xl animate-float-1 opacity-70 filter drop-shadow-[0_0_10px_rgba(245,166,35,0.6)]">
+      💎
+    </div>
+    <!-- ئالماس 2 -->
+    <div class="absolute top-28 right-8 text-xl sm:text-2xl animate-float-2 opacity-60 filter drop-shadow-[0_0_10px_rgba(59,130,246,0.6)]">
+      💎
+    </div>
+    <!-- ئالتۇن بەلگە 3 -->
+    <div class="absolute bottom-36 left-8 text-2xl sm:text-3xl animate-float-3 opacity-65 filter drop-shadow-[0_0_12px_rgba(245,166,35,0.7)]">
+      ✨
+    </div>
+    <!-- ئالماس 4 -->
+    <div class="absolute bottom-24 right-10 text-2xl sm:text-3xl animate-float-4 opacity-75 filter drop-shadow-[0_0_15px_rgba(255,87,34,0.6)]">
+      💎
+    </div>
+    <!-- ئوت قوغۇن بەلگىسى 5 -->
+    <div class="absolute top-1/2 left-4 text-xl animate-float-2 opacity-50 filter drop-shadow-[0_0_8px_rgba(245,166,35,0.5)]">
+      🔥
+    </div>
+    <!-- يۇلتۇزچە 6 -->
+    <div class="absolute top-2/3 right-5 text-xl animate-float-1 opacity-55 filter drop-shadow-[0_0_8px_rgba(245,166,35,0.5)]">
+      ⭐
+    </div>
+  </div>
 
   <!-- ئۈستۈنكى ماۋزۇ ۋە بەلگە قىسمى -->
-  <header class="w-full max-w-md pt-4 pb-6 text-center">
-    <div class="inline-flex items-center justify-center p-2 mb-3 bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/40 rounded-2xl shadow-glow-gold backdrop-blur-md">
+  <header class="w-full max-w-md pt-4 pb-6 text-center relative z-10">
+    <div class="inline-flex items-center justify-center p-2 mb-3 bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/40 rounded-2xl shadow-glow-gold backdrop-blur-md animate-pulse-glow">
       <img src="logo.jpg" 
            alt="PUBG" 
            class="w-16 h-16 object-cover rounded-xl shadow-md border border-amber-500/30">
@@ -78,10 +132,10 @@
     <p class="text-xs sm:text-sm text-slate-400 mt-1">پوپىللىك زاكاس ئىلىش ۋە تىلگىرامما ئارقىلىق ئاپتۇماتىك تەستىقلاش مەركىزى</p>
   </header>
 
-  <!-- ئاساسىي جەدۋەل كارتىسى -->
-  <main class="w-full max-w-md bg-pubgCard border border-pubgBorder rounded-3xl p-5 sm:p-6 shadow-2xl relative overflow-hidden backdrop-blur-lg">
-    <!-- بېزەك نۇر لىنىيىسى -->
-    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+  <!-- ئاساسىي جەدۋەل كارتىسى (مىدىرلاپ تۇرىدىغان نۇرلۇق گىرۋەك بىلەن) -->
+  <main class="w-full max-w-md bg-pubgCard/95 border card-animated-border rounded-3xl p-5 sm:p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl z-10">
+    <!-- ئۈستۈنكى بېزەك نۇر لىنىيىسى -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
 
     <form id="popularityForm" class="space-y-5">
       
@@ -111,20 +165,23 @@
       <!-- 2. نۇپۇز سانى (Popularity Amount) -->
       <div>
         <label for="amount" class="block text-sm font-semibold text-amber-300/90 mb-2 flex items-center justify-between">
-          <span>💎 ئەۋەتىلگەن نۇپۇز سانى</span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block animate-bounce text-sm">💎</span>
+            <span>ئەۋەتىلگەن نۇپۇز سانى</span>
+          </span>
           <span class="text-xs text-rose-400">* كەم بولسا بولمايدۇ</span>
         </label>
 
-        <!-- تېز تاللاش كۇنۇپكىلىرى -->
+        <!-- تېز تاللاش كۇنۇپكىلىرى: 50,000+ ، 100,000+ ، 500,000+ -->
         <div class="grid grid-cols-3 gap-2 mb-2.5">
-          <button type="button" data-value="10000" class="preset-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-300 transition-all">
-            +10,000
+          <button type="button" data-value="50000" class="preset-btn py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-all active:scale-95 flex items-center justify-center gap-1">
+            <span>+50,000</span>
           </button>
-          <button type="button" data-value="50000" class="preset-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-300 transition-all">
-            +50,000
+          <button type="button" data-value="100000" class="preset-btn py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-all active:scale-95 flex items-center justify-center gap-1">
+            <span>+100,000</span>
           </button>
-          <button type="button" data-value="100000" class="preset-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-300 transition-all">
-            +100,000
+          <button type="button" data-value="500000" class="preset-btn py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 transition-all active:scale-95 flex items-center justify-center gap-1">
+            <span>+500,000</span>
           </button>
         </div>
 
@@ -133,7 +190,7 @@
             type="number" 
             id="amount" 
             inputmode="numeric" 
-            placeholder="نۇپۇز سانىنى كىرگۈزۈڭ (مەس: 20000)"
+            placeholder="نۇپۇز سانىنى كىرگۈزۈڭ (مەس: 50000)"
             required
             min="100"
             class="w-full bg-slate-900/90 border border-slate-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 rounded-xl px-4 py-3.5 text-base text-amber-100 placeholder-slate-500 transition-all duration-200 outline-none font-mono text-left"
