@@ -256,6 +256,35 @@
         </div>
       </div>
 
+      <!-- پوپىللىك ئاتىدىغان ئويۇن ئايدى نومۇرى (بىر چېكىپ كۆچۈرۈش رايونى) -->
+      <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 sm:p-4 text-right">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-amber-300 font-bold flex items-center gap-1">
+            <span class="icon-bounce text-sm">🎯</span>
+            <span>پوپىللىك ئاتىدىغان ئويۇن ئايدى نومۇرى:</span>
+          </span>
+          <span class="text-[11px] text-slate-400">چەكسىڭىز كۆچۈرۈلىدۇ</span>
+        </div>
+
+        <div 
+          onclick="copyTargetId()" 
+          class="group flex items-center justify-between bg-slate-900/90 hover:bg-slate-900 border border-amber-400/50 hover:border-amber-400 rounded-xl px-3.5 py-2.5 cursor-pointer transition-all active:scale-[0.98] shadow-md"
+          title="چېكىپ كۆچۈرۈڭ"
+        >
+          <span id="targetIdText" class="font-mono text-base sm:text-lg font-extrabold text-amber-300 tracking-wider">
+            51947682457
+          </span>
+          <button 
+            type="button" 
+            id="copyBtnBadge" 
+            class="px-2.5 py-1 bg-amber-500 group-hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg flex items-center gap-1 transition-all"
+          >
+            <span id="copyIcon">📋</span>
+            <span id="copyStatusText">كۆچۈرۈش</span>
+          </button>
+        </div>
+      </div>
+
       <!-- 4. ئالاقىلىشىش ئۇچۇرى (ئىختىيارىي) -->
       <div>
         <label for="contact" class="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">

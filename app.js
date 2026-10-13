@@ -29,6 +29,39 @@ const presetButtons = document.querySelectorAll('.preset-btn');
 
 let selectedFile = null;
 
+// نۇپۇز قوبۇل قىلىدىغان ئويۇن كىملىكىنى (51947682457) بىر چەككەندە كۆچۈرۈش ئىقتىدارى
+window.copyTargetId = function() {
+  const targetId = '51947682457';
+  navigator.clipboard.writeText(targetId).then(() => {
+    const copyStatusText = document.getElementById('copyStatusText');
+    const copyIcon = document.getElementById('copyIcon');
+    const copyBtnBadge = document.getElementById('copyBtnBadge');
+    
+    if (copyStatusText && copyIcon && copyBtnBadge) {
+      copyStatusText.textContent = 'كۆچۈرۈلدى! ✓';
+      copyIcon.textContent = '✅';
+      copyBtnBadge.classList.remove('bg-amber-500');
+      copyBtnBadge.classList.add('bg-emerald-500', 'text-white');
+
+      setTimeout(() => {
+        copyStatusText.textContent = 'كۆچۈرۈش';
+        copyIcon.textContent = '📋';
+        copyBtnBadge.classList.remove('bg-emerald-500', 'text-white');
+        copyBtnBadge.classList.add('bg-amber-500');
+      }, 2500);
+    }
+  }).catch(err => {
+    // تېلېفوندا كونا كۆرگۈچلەر ئۈچۈن قوشۇمچە كۆچۈرۈش ئۇسۇلى
+    const tempInput = document.createElement('input');
+    tempInput.value = targetId;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    alert('كۆچۈرۈلدى: ' + targetId);
+  });
+};
+
 // 3. نۇپۇز سانى تېز تاللاش كۇنۇپكىلىرى (Presets)
 presetButtons.forEach(btn => {
   btn.addEventListener('click', () => {
