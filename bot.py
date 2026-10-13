@@ -129,18 +129,63 @@ def handle_callback_query(call):
 
 
 # -------------------------------------------------------------
-# 3. باشلىنىش بۇيرۇقى (/start)
+# 3. باشلىنىش بۇيرۇقى (/start ۋە /help)
 # -------------------------------------------------------------
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
+    user_name = message.from_user.first_name or "دوستۇم"
+    
     welcome_text = (
-        "🤖 <b>PUBG نۇپۇز تېلېگرامما دەلىللەش بوتىغا مەرھابا!</b>\n\n"
-        "بۇ بوت تور بېكەتتىن ئەۋەتىلگەن نۇپۇز ئۇچۇرلىرىنى قوبۇل قىلىدۇ ۋە "
-        "سىزگە تەستىقلاش ياكى رەت قىلىش كۇنۇپكىسى بىلەن تەڭ يەتكۈزۈپ بېرىدۇ.\n\n"
-        f"🆔 سىزنىڭ Chat ID ڭىز: <code>{message.chat.id}</code>\n"
-        "(بۇ ID نى <code>config.js</code> غا كىرگۈزۈڭ)"
+        f"👋 <b>ئەسسالامۇ ئەلەيكۇم، {user_name}!</b>\n\n"
+        "🎮 <b>PUBG نۇپۇز (Popularity) رەسمىي دەلىللەش بوتىغا خۇش كەپسىز!</b>\n\n"
+        "⚡ <b>سىستېما ئىقتىدارلىرى:</b>\n"
+        "• تور بەتتىن كەلگەن نۇپۇز زاكازلىرىنى سۈرەت بىلەن دەل ۋاقتىدا قوبۇل قىلىش\n"
+        "• بىرلا چەككەندە <b>[ ✅ تەستىقلاش ]</b> ياكى <b>[ ❌ رەت قىلىش ]</b>\n"
+        "• ساندان ۋە كۆرۈنمە يۈزنى ئاپتوماتىك يېڭىلاش\n\n"
+        f"🆔 <b>سىزنىڭ تېلېگرامما ID ڭىز:</b> <code>{message.chat.id}</code>\n\n"
+        "👇 <b>تۆۋەندىكى تۈگمىلەرنى بېسىپ بىۋاسىتە تور بېكەتنى ئاچالايسىز:</b>"
     )
-    bot.reply_to(message, welcome_text, parse_mode="HTML")
+
+    # كۇنۇپكىلار
+    markup = InlineKeyboardMarkup(row_width=1)
+    btn_website = InlineKeyboardButton(
+        text="🌐 خېرىدار نۇپۇز تاپشۇرۇش بېتى", 
+        url="https://musapparwaz-hub.github.io/musapparwaz/"
+    )
+    btn_admin = InlineKeyboardButton(
+        text="🔐 باشقۇرۇش كۆرۈنمە يۈزى (Admin Panel)", 
+        url="https://musapparwaz-hub.github.io/musapparwaz/admin.html"
+    )
+    btn_contact = InlineKeyboardButton(
+        text="💬 مەسئۇل بىلەن ئالاقىلىشىش", 
+        url="https://t.me/SELilo7"
+    )
+    markup.add(btn_website, btn_admin, btn_contact)
+
+    bot.reply_to(message, welcome_text, parse_mode="HTML", reply_markup=markup)
+
+
+# ستاتىستىكا كۆرۈش بۇيرۇقى (/stats)
+@bot.message_handler(commands=['stats'])
+def send_stats(message):
+    try:
+        res = supabase.table("popularity_submissions").select("status").execute()
+        data = res.data or []
+        total = len(data)
+        pending = sum(1 for x in data if x.get("status") == "pending")
+        approved = sum(1 for x in data if x.get("status") == "approved")
+        rejected = sum(1 for x in data if x.get("status") == "rejected")
+
+        stats_text = (
+            "📊 <b>نۇپۇز زاكازلىرى ستاتىستىكىسى:</b>\n\n"
+            f"📦 <b>ئومۇمىي زاكاز:</b> {total}\n"
+            f"⏳ <b>كۈتۈلمەكتە:</b> {pending}\n"
+            f"✅ <b>تەستىقلانغان:</b> {approved}\n"
+            f"❌ <b>رەت قىلىنغان:</b> {rejected}\n"
+        )
+        bot.reply_to(message, stats_text, parse_mode="HTML")
+    except Exception as e:
+        bot.reply_to(message, f"ستاتىستىكىنى ئېلىشتا خاتالىق: {e}")
 
 
 # -------------------------------------------------------------
