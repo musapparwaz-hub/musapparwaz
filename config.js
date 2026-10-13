@@ -1,11 +1,9 @@
 // PUBG نۇپۇز سىستېمىسى - ئاساسىي سەپلىمە ھۆججىتى
-// ئۆزىڭىزنىڭ Supabase ۋە Telegram ئۇچۇرلىرىنى مۇشۇ يەرگە كىرگۈزۈڭ
+// بارلىق سەپلىمىلەر تولۇق تەڭشەلدى
 
 const CONFIG = {
   // Supabase پۈتۈن تەڭشەكلىرى
-  // ئەسكەرتىش: Supabase Project URL ئادەتتە https://xxxx.supabase.co شەكلىدە بولىدۇ.
-  // ئاستىدىكى URL غا ئۆزىڭىزنىڭ Supabase تۈرىنىڭ Project URL ئادرېسىنى قويۇڭ (Settings -> Data API)
-  SUPABASE_URL: "https://PROJECT_ID.supabase.co",
+  SUPABASE_URL: "https://soqeaukdppqcxvdhonac.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_5Bqn-ZdZ_bmvBZTLYDsVXA_ZGkijOlC",
   
   // Storage Bucket ئىسمى (schema.sql دا قۇرۇلغان bucket نامى)
