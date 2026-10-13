@@ -243,8 +243,8 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  if (!amount || Number(amount) <= 0) {
-    showAlert('خاتالىق', 'ئەسكەرتىش: توغرا بولغان نۇپۇز سانىنى كىرگۈزۈڭ!', 'error');
+  if (!amount || Number(amount) < 50000) {
+    showAlert('خاتالىق', 'ئەسكەرتىش: نۇپۇز سانى ئەڭ ئاز بولغاندا 50,000 بولۇشى كېرەك!', 'error');
     amountInput.focus();
     return;
   }
