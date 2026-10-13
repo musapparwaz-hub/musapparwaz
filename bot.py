@@ -146,21 +146,17 @@ def send_welcome(message):
         "👇 <b>تۆۋەندىكى تۈگمىلەرنى بېسىپ بىۋاسىتە تور بېكەتنى ئاچالايسىز:</b>"
     )
 
-    # كۇنۇپكىلار
+    # كۇنۇپكىلار (خېرىدار بېتى ۋە ئالاقىلىشىش)
     markup = InlineKeyboardMarkup(row_width=1)
     btn_website = InlineKeyboardButton(
-        text="🌐 خېرىدار نۇپۇز تاپشۇرۇش بېتى", 
+        text="🌐 نۇپۇز تاپشۇرۇش بېتىنى ئېچىش", 
         url="https://musapparwaz-hub.github.io/musapparwaz/"
-    )
-    btn_admin = InlineKeyboardButton(
-        text="🔐 باشقۇرۇش كۆرۈنمە يۈزى (Admin Panel)", 
-        url="https://musapparwaz-hub.github.io/musapparwaz/admin.html"
     )
     btn_contact = InlineKeyboardButton(
         text="💬 مەسئۇل بىلەن ئالاقىلىشىش", 
         url="https://t.me/SELilo7"
     )
-    markup.add(btn_website, btn_admin, btn_contact)
+    markup.add(btn_website, btn_contact)
 
     bot.reply_to(message, welcome_text, parse_mode="HTML", reply_markup=markup)
 
