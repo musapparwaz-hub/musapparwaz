@@ -16,5 +16,5 @@ const CONFIG = {
   TELEGRAM_CHAT_ID: "6613680953",
 
   // باشقۇرغۇچى بېتىنىڭ (admin.html) كىرىش كودى (PIN)
-  ADMIN_PIN: "8888"
+  ADMIN_PIN: "5346"
 };
