@@ -1,6 +1,5 @@
 -- ========================================================
 -- PUBG نۇپۇز سىستېمىسى: Supabase ساندان ۋە Storage قۇرۇلمىسى
--- بۇ كودنى Supabase نىڭ SQL Editor قىسمىغا چاپلاپ Run كۇنۇپكىسىنى بېسىڭ
 -- ========================================================
 
 -- 1. نۇپۇز ئۇچۇرلىرى جەدۋىلىنى قۇرۇش
@@ -15,51 +14,31 @@ CREATE TABLE IF NOT EXISTS public.popularity_submissions (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- جەدۋەلنىڭ كۆرسەتكۈچلىرى (Index) ئۈنۈملۈك قىلىش ئۈچۈن
+-- 2. بوتقا كىرگەن بارلىق ئىشلەتكۈچىلەر (ئابونتلار) جەدۋىلى (ئومۇمىي ئۇچۇر تارقىتىش ئۈچۈن)
+CREATE TABLE IF NOT EXISTS public.bot_users (
+    user_id BIGINT PRIMARY KEY,
+    first_name VARCHAR(128) DEFAULT NULL,
+    username VARCHAR(128) DEFAULT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS idx_submissions_status ON public.popularity_submissions(status);
 CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON public.popularity_submissions(created_at DESC);
 
--- 2. Row Level Security (RLS) نى قوزغىتىش
+-- RLS نى قوزغىتىش ۋە تولۇق رۇخسەتلەرنى ئېچىش
 ALTER TABLE public.popularity_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.bot_users ENABLE ROW LEVEL SECURITY;
 
--- خېرىدارلار تەرەپ (ئىنتېرنېتتىن كەلگەنلەر) جەدۋەلگە يېڭى ئۇچۇر تاپشۇرالايدۇ (INSERT)
-CREATE POLICY "ئاشكارا ئۇچۇر تاپشۇرۇش" 
-ON public.popularity_submissions 
-FOR INSERT 
-TO anon, authenticated
-WITH CHECK (true);
+CREATE POLICY "submissions_insert" ON public.popularity_submissions FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "submissions_select" ON public.popularity_submissions FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "submissions_update" ON public.popularity_submissions FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
 
--- باشقۇرغۇچى ۋە ئاممىۋى كۆرۈنمە يۈز ئۇچۇرلارنى ئوقۇيالايدۇ (SELECT)
-CREATE POLICY "ئاشكارا ئۇچۇر كۆرۈش" 
-ON public.popularity_submissions 
-FOR SELECT 
-TO anon, authenticated
-USING (true);
+CREATE POLICY "bot_users_all" ON public.bot_users FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 
--- تېلېگرامما بوت ۋە باشقۇرغۇچى ئۇچۇر ھالىتىنى ئۆزگەرتەلەيدۇ (UPDATE)
-CREATE POLICY "ئۇچۇر يېڭىلاشقا رۇخسەت" 
-ON public.popularity_submissions 
-FOR UPDATE 
-TO anon, authenticated
-USING (true)
-WITH CHECK (true);
-
--- 3. Storage Bucket قۇرۇش (ئىسپات سۈرەتلىرىنى ساقلاش ئۈچۈن)
--- ئەسكەرتىش: Supabase Dashboard -> Storage دىن 'screenshots' ناملىق Public Bucket قۇرسىڭىزمۇ ياكى تۆۋەندىكى SQL بىلەن ئاچسىڭىزمۇ بولىدۇ
+-- Storage قۇتىسىنى ئېچىش
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('screenshots', 'screenshots', true)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
--- Storage قا سۈرەت يۈكلەش رۇخسىتى بېرىش (INSERT)
-CREATE POLICY "ھەممە ئادەم سۈرەت يوللىيالايدۇ" 
-ON storage.objects 
-FOR INSERT 
-TO anon, authenticated
-WITH CHECK (bucket_id = 'screenshots');
-
--- Storage دىكى سۈرەتلەرنى كۆرۈش رۇخسىتى بېرىش (SELECT)
-CREATE POLICY "ھەممە ئادەم سۈرەت كۆرەلەيدۇ" 
-ON storage.objects 
-FOR SELECT 
-TO anon, authenticated
-USING (bucket_id = 'screenshots');
+CREATE POLICY "storage_insert" ON storage.objects FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'screenshots');
+CREATE POLICY "storage_select" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'screenshots');
