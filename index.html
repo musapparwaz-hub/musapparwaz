@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ug" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PUBG نۇپۇز ئەۋەتىش ۋە دەلىللەش مەركىزى</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- كۆچمە تېلېفون ۋە ئويۇن ئۇسلۇبى خەت ۋە ئۈنۈملىرى -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            gaming: ['"Chakra Petch"', 'sans-serif'],
+            uyghur: ['"Noto Sans Arabic"', 'Tahoma', 'sans-serif'],
+          },
+          colors: {
+            pubgGold: '#F5A623',
+            pubgOrange: '#FF5722',
+            pubgDark: '#0B0E14',
+            pubgCard: '#151A23',
+            pubgBorder: '#232B3B'
+          },
+          boxShadow: {
+            'glow-gold': '0 0 25px rgba(245, 166, 35, 0.35)',
+            'glow-orange': '0 0 30px rgba(255, 87, 34, 0.4)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans Arabic', Tahoma, sans-serif;
+      background-color: #0B0E14;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(245, 166, 35, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 80% 100%, rgba(255, 87, 34, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .game-title {
+      font-family: 'Chakra Petch', 'Noto Sans Arabic', sans-serif;
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col items-center justify-start p-4 pb-12 antialiased selection:bg-amber-500 selection:text-black">
+
+  <!-- ئۈستۈنكى ماۋزۇ ۋە بەلگە قىسمى -->
+  <header class="w-full max-w-md pt-4 pb-6 text-center">
+    <div class="inline-flex items-center justify-center p-3 mb-3 bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/40 rounded-2xl shadow-glow-gold backdrop-blur-md">
+      <span class="text-3xl">🏆</span>
+    </div>
+    <h1 class="game-title text-2xl sm:text-3xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-200 to-orange-500">
+      PUBG POPULARITY
+    </h1>
+    <p class="text-xs sm:text-sm text-slate-400 mt-1">نۇپۇز ئەۋەتىش ۋە تېلېگرامما ئارقىلىق ئاپتوماتىك تەستىقلاش مەركىزى</p>
+  </header>
+
+  <!-- ئاساسىي جەدۋەل كارتىسى -->
+  <main class="w-full max-w-md bg-pubgCard border border-pubgBorder rounded-3xl p-5 sm:p-6 shadow-2xl relative overflow-hidden backdrop-blur-lg">
+    <!-- بېزەك نۇر لىنىيىسى -->
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent"></div>
+
+    <form id="popularityForm" class="space-y-5">
+      
+      <!-- 1. PUBG ID كىرگۈزۈش -->
+      <div>
+        <label for="pubgId" class="block text-sm font-semibold text-amber-300/90 mb-2 flex items-center justify-between">
+          <span>🎮 PUBG ئويۇن كىملىكى (UID)</span>
+          <span class="text-xs text-rose-400">* پەقەت سان</span>
+        </label>
+        <div class="relative">
+          <input 
+            type="text" 
+            id="pubgId" 
+            inputmode="numeric" 
+            pattern="[0-9]*" 
+            placeholder="مەسىلەن: 5123456789"
+            required
+            class="w-full bg-slate-900/90 border border-slate-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 rounded-xl px-4 py-3.5 text-base text-amber-100 placeholder-slate-500 transition-all duration-200 outline-none font-mono text-left"
+          >
+          <div class="absolute left-3 top-3.5 text-slate-500 pointer-events-none text-sm">
+            🆔
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1">ئويۇن ئىچىدىكى شەخسىي كۆرۈنمە يۈزدىن UID كۆچۈرۈپ ئەكىلىڭ.</p>
+      </div>
+
+      <!-- 2. نۇپۇز سانى (Popularity Amount) -->
+      <div>
+        <label for="amount" class="block text-sm font-semibold text-amber-300/90 mb-2 flex items-center justify-between">
+          <span>💎 ئەۋەتىلگەن نۇپۇز سانى</span>
+          <span class="text-xs text-rose-400">* كەم بولسا بولمايدۇ</span>
+        </label>
+
+        <!-- تېز تاللاش كۇنۇپكىلىرى -->
+        <div class="grid grid-cols-3 gap-2 mb-2.5">
+          <button type="button" data-value="10000" class="preset-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-300 transition-all">
+            +10,000
+          </button>
+          <button type="button" data-value="50000" class="preset-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-300 transition-all">
+            +50,000
+          </button>
+          <button type="button" data-value="100000" class="preset-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-300 transition-all">
+            +100,000
+          </button>
+        </div>
+
+        <div class="relative">
+          <input 
+            type="number" 
+            id="amount" 
+            inputmode="numeric" 
+            placeholder="نۇپۇز سانىنى كىرگۈزۈڭ (مەس: 20000)"
+            required
+            min="100"
+            class="w-full bg-slate-900/90 border border-slate-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 rounded-xl px-4 py-3.5 text-base text-amber-100 placeholder-slate-500 transition-all duration-200 outline-none font-mono text-left"
+          >
+          <div class="absolute left-3 top-3.5 text-slate-500 pointer-events-none text-sm">
+            ✨
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. ئىسپات سۈرىتى يۈكلەش (Screenshot with Preview) -->
+      <div>
+        <label class="block text-sm font-semibold text-amber-300/90 mb-2 flex items-center justify-between">
+          <span>📸 ئەۋەتكەنلىك ئىسپات رەسىمى</span>
+          <span class="text-xs text-rose-400">* تەلەپ قىلىنىدۇ</span>
+        </label>
+
+        <!-- يۈكلەش قۇتىسى -->
+        <label for="screenshot" class="group flex flex-col items-center justify-center border-2 border-dashed border-slate-700 group-hover:border-amber-400/60 rounded-2xl p-5 bg-slate-900/50 hover:bg-slate-900/90 cursor-pointer transition-all duration-200">
+          <div class="w-12 h-12 mb-2 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 font-medium">سۈرەت تاللاش ئۈچۈن چېكىڭ</p>
+          <p class="text-[11px] text-slate-500 mt-1">ئاپتوماتىك 500KB غا سىقىلىپ يوللىنىدۇ</p>
+          <input type="file" id="screenshot" accept="image/*" class="hidden" required>
+        </label>
+
+        <!-- ئالدىن كۆرۈش رايونى (Preview) -->
+        <div id="previewContainer" class="hidden mt-3 relative rounded-xl overflow-hidden border border-amber-500/40 bg-black/60 shadow-lg">
+          <img id="imagePreview" src="" alt="ئالدىن كۆرۈش" class="w-full max-h-56 object-contain bg-black/80">
+          <button type="button" id="removeImageBtn" class="absolute top-2 left-2 bg-rose-600/90 hover:bg-rose-600 text-white p-1.5 rounded-lg text-xs font-bold transition-all shadow-md flex items-center gap-1">
+            <span>✕ ئۆچۈرۈش</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. ئالاقىلىشىش ئۇچۇرى (ئىختىيارىي) -->
+      <div>
+        <label for="contact" class="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
+          <span>📱 ئالاقىلىشىش ئۇچۇرى (تاللاپ كىرگۈزۈلىدۇ)</span>
+          <span class="text-xs text-slate-500">ئىختىيارىي</span>
+        </label>
+        <input 
+          type="text" 
+          id="contact" 
+          placeholder="Telegram @user ياكى تېلېفون نومۇرى"
+          class="w-full bg-slate-900/90 border border-slate-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 transition-all duration-200 outline-none"
+        >
+      </div>
+
+      <!-- 5. تاپشۇرۇش كۇنۇپكىسى -->
+      <button 
+        type="submit" 
+        id="submitBtn"
+        class="w-full mt-2 py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-base tracking-wide shadow-glow-gold hover:shadow-glow-orange active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <svg id="btnSpinner" class="hidden animate-spin h-5 w-5 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+        <span id="btnText">🚀 نۇپۇز ئۇچۇرىنى تاپشۇرۇش</span>
+      </button>
+
+    </form>
+
+    <!-- ئاستى تەرەپ كۆرسەتمىسى -->
+    <div class="mt-6 pt-4 border-t border-slate-800 text-center">
+      <p class="text-xs text-slate-400 leading-relaxed">
+        ⚡ نۇپۇز ئەۋەتىلگەندىن كېيىن، سىستېما تېلېگرامما بوت ئارقىلىق باشقۇرغۇچىغا دەلىللەش ئۇچۇرى يوللايدۇ.
+      </p>
+      <div class="mt-3">
+        <a href="admin.html" class="text-xs text-amber-400/70 hover:text-amber-300 underline transition-colors">
+          🔐 باشقۇرۇش كۆرۈنمە يۈزىگە كىرىش
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- خەۋەردار قىلىش Modal كۆزنىكى -->
+  <div id="alertModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-pubgCard border border-slate-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl text-center transform transition-all">
+      <h3 id="alertTitle" class="text-xl font-bold mb-3 text-amber-400">ئۇقتۇرۇش</h3>
+      <p id="alertMessage" class="text-sm text-slate-300 mb-6 leading-relaxed whitespace-pre-line"></p>
+      <button id="alertCloseBtn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl hover:opacity-95 transition-all">
+        چۈشەندىم
+      </button>
+    </div>
+  </div>
+
+  <!-- تەڭشەك ۋە ئىجرا كودلىرى -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

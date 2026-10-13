@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ug" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PUBG نۇپۇز باشقۇرۇش مەركىزى (Admin Panel)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- خەت نۇسخىلىرى -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            gaming: ['"Chakra Petch"', 'sans-serif'],
+            uyghur: ['"Noto Sans Arabic"', 'Tahoma', 'sans-serif'],
+          },
+          colors: {
+            pubgDark: '#0B0E14',
+            pubgCard: '#151A23',
+            pubgBorder: '#232B3B'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans Arabic', Tahoma, sans-serif;
+      background-color: #0B0E14;
+      background-image: radial-gradient(circle at 50% 0%, rgba(245, 166, 35, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen p-3 sm:p-6 antialiased selection:bg-amber-500 selection:text-black">
+
+  <!-- 1. پارول بىلەن كىرىش رايونى (PIN Auth) -->
+  <div id="loginView" class="min-h-[80vh] flex items-center justify-center">
+    <div class="w-full max-w-sm bg-pubgCard border border-pubgBorder rounded-3xl p-6 sm:p-8 shadow-2xl text-center relative overflow-hidden">
+      <div class="w-16 h-16 mx-auto mb-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center text-3xl">
+        🔐
+      </div>
+      <h2 class="text-xl font-bold text-amber-400 mb-1">باشقۇرغۇچى كىرىش</h2>
+      <p class="text-xs text-slate-400 mb-6">سىستېمىنى باشقۇرۇش ئۈچۈن PIN پارولىنى كىرگۈزۈڭ</p>
+
+      <form id="loginForm" class="space-y-4">
+        <input 
+          type="password" 
+          id="pinInput" 
+          inputmode="numeric" 
+          placeholder="PIN پارولىنى كىرگۈزۈڭ" 
+          class="w-full text-center tracking-widest text-lg bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-4 py-3 outline-none text-amber-300"
+          required
+        >
+        <button 
+          type="submit" 
+          class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl hover:opacity-95 transition-all shadow-lg"
+        >
+          كىرىش
+        </button>
+        <p id="loginError" class="text-xs text-rose-400 hidden mt-2">خاتالىق: پارول خاتا!</p>
+      </form>
+      <div class="mt-4">
+        <a href="index.html" class="text-xs text-slate-500 hover:text-slate-300">← خېرىدار تاپشۇرۇش بېتىگە قايتىش</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ئاساسىي باشقۇرۇش كۆرۈنمە يۈزى (Admin Dashboard) -->
+  <div id="dashboardView" class="hidden max-w-6xl mx-auto space-y-6">
+    
+    <!-- ئۈستۈنكى بالداق (Header Bar) -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-pubgCard border border-pubgBorder p-4 sm:p-5 rounded-2xl shadow-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-amber-500/20 border border-amber-500/40 rounded-xl flex items-center justify-center text-xl">
+          📊
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold text-amber-400">PUBG نۇپۇز باشقۇرۇش مەركىزى</h1>
+          <p class="text-xs text-slate-400">كەلگەن بارلىق نۇپۇز ئۇچۇرلىرى ۋە دەلىللەش ھالىتى</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 self-end sm:self-auto">
+        <button id="refreshBtn" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200 rounded-xl flex items-center gap-1.5 transition-all">
+          <span>🔄 يېڭىلاش</span>
+        </button>
+        <a href="index.html" target="_blank" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-amber-400 rounded-xl flex items-center gap-1.5 transition-all">
+          <span>🌐 خېرىدار بېتى</span>
+        </a>
+        <button id="logoutBtn" class="px-3.5 py-2 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-xs text-rose-300 rounded-xl transition-all">
+          چېكىنىش
+        </button>
+      </div>
+    </header>
+
+    <!-- سانلىق مەلۇمات ستاتىستىكا كارتىلىرى -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      <div class="bg-pubgCard border border-pubgBorder p-4 rounded-2xl">
+        <p class="text-xs text-slate-400">ئومۇمىي سانى</p>
+        <p id="totalCount" class="text-xl sm:text-2xl font-bold text-slate-100 mt-1">0</p>
+      </div>
+      <div class="bg-pubgCard border border-amber-500/30 p-4 rounded-2xl">
+        <p class="text-xs text-amber-400">كۈتۈلمەكتە (Pending)</p>
+        <p id="pendingCount" class="text-xl sm:text-2xl font-bold text-amber-400 mt-1">0</p>
+      </div>
+      <div class="bg-pubgCard border border-emerald-500/30 p-4 rounded-2xl">
+        <p class="text-xs text-emerald-400">تەستىقلانغان (Approved)</p>
+        <p id="approvedCount" class="text-xl sm:text-2xl font-bold text-emerald-400 mt-1">0</p>
+      </div>
+      <div class="bg-pubgCard border border-rose-500/30 p-4 rounded-2xl">
+        <p class="text-xs text-rose-400">رەت قىلىنغان (Rejected)</p>
+        <p id="rejectedCount" class="text-xl sm:text-2xl font-bold text-rose-400 mt-1">0</p>
+      </div>
+    </div>
+
+    <!-- سۈزگۈچ ۋە جەدۋەل رايونى -->
+    <div class="bg-pubgCard border border-pubgBorder rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+      
+      <!-- ھالەت سۈزگۈچ كۇنۇپكىلىرى -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <span class="text-slate-400 font-semibold ml-2">ھالەت سۈزۈش:</span>
+        <button class="filter-btn active-filter px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all" data-status="all">ھەممىسى</button>
+        <button class="filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all" data-status="pending">كۈتۈلمەكتە</button>
+        <button class="filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all" data-status="approved">تەستىقلاندى</button>
+        <button class="filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all" data-status="rejected">رەت قىلىندى</button>
+      </div>
+
+      <!-- سانلىق مەلۇمات جەدۋىلى -->
+      <div class="overflow-x-auto custom-scroll rounded-xl border border-slate-800">
+        <table class="w-full text-right text-xs sm:text-sm">
+          <thead class="bg-slate-900/90 text-slate-400 font-semibold border-b border-slate-800">
+            <tr>
+              <th class="p-3 text-center"># ID</th>
+              <th class="p-3">🎮 PUBG كىملىكى</th>
+              <th class="p-3">💎 نۇپۇز سانى</th>
+              <th class="p-3">📸 ئىسپات سۈرىتى</th>
+              <th class="p-3">📞 ئالاقە</th>
+              <th class="p-3">📅 ۋاقتى</th>
+              <th class="p-3 text-center">📌 ھالىتى</th>
+              <th class="p-3 text-center">⚙️ مەشغۇلات</th>
+            </tr>
+          </thead>
+          <tbody id="submissionsTableBody" class="divide-y divide-slate-800 text-slate-200">
+            <tr>
+              <td colspan="8" class="p-8 text-center text-slate-500">يۈكلىنىۋاتىدۇ...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- چوڭ سۈرەت كۆرۈش كۆزنىكى (Image Modal) -->
+  <div id="imageModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="relative max-w-2xl w-full flex flex-col items-center">
+      <button id="closeImageModalBtn" class="absolute -top-10 left-0 bg-rose-600 text-white px-3 py-1 rounded-lg text-sm font-bold">
+        ✕ ياپقۇچ
+      </button>
+      <img id="modalImg" src="" alt="ئىسپات رەسىمى" class="max-h-[80vh] w-auto rounded-xl border border-slate-700 shadow-2xl object-contain">
+      <a id="downloadImgLink" href="" target="_blank" download class="mt-3 text-xs text-amber-400 hover:underline">
+        🔗 ئەسلى سۈرەت ئۇلىنىشىنى ئېچىش
+      </a>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    // Supabase تەڭشەش
+    const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+    // ئېلېمېنتلار
+    const loginView = document.getElementById('loginView');
+    const dashboardView = document.getElementById('dashboardView');
+    const loginForm = document.getElementById('loginForm');
+    const pinInput = document.getElementById('pinInput');
+    const loginError = document.getElementById('loginError');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    const totalCountEl = document.getElementById('totalCount');
+    const pendingCountEl = document.getElementById('pendingCount');
+    const approvedCountEl = document.getElementById('approvedCount');
+    const rejectedCountEl = document.getElementById('rejectedCount');
+    const submissionsTableBody = document.getElementById('submissionsTableBody');
+
+    const imageModal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    const closeImageModalBtn = document.getElementById('closeImageModalBtn');
+    const downloadImgLink = document.getElementById('downloadImgLink');
+
+    let currentFilter = 'all';
+    let allSubmissions = [];
+
+    // كىرىش تەكشۈرۈش
+    if (sessionStorage.getItem('admin_authenticated') === 'true') {
+      showDashboard();
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const enteredPin = pinInput.value.trim();
+      const targetPin = CONFIG.ADMIN_PIN || '8888';
+
+      if (enteredPin === targetPin) {
+        sessionStorage.setItem('admin_authenticated', 'true');
+        loginError.classList.add('hidden');
+        showDashboard();
+      } else {
+        loginError.classList.remove('hidden');
+        pinInput.value = '';
+        pinInput.focus();
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('admin_authenticated');
+      dashboardView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+      pinInput.value = '';
+    });
+
+    function showDashboard() {
+      loginView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      loadSubmissions();
+    }
+
+    // سانلىق مەلۇماتلارنى يۈكلەش
+    async function loadSubmissions() {
+      submissionsTableBody.innerHTML = `
+        <tr><td colspan="8" class="p-8 text-center text-slate-400 animate-pulse">يېڭى سانلىق مەلۇماتلار تەكشۈرۈلۈۋاتىدۇ...</td></tr>
+      `;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('popularity_submissions')
+          .select('*')
+          .order('id', { ascending: false });
+
+        if (error) throw error;
+
+        allSubmissions = data || [];
+        updateStats();
+        renderTable();
+      } catch (err) {
+        console.error('Error fetching submissions:', err);
+        submissionsTableBody.innerHTML = `
+          <tr><td colspan="8" class="p-8 text-center text-rose-400">سانلىق مەلۇماتنى ئېلىش مەغلۇپ بولدى: ${err.message}</td></tr>
+        `;
+      }
+    }
+
+    function updateStats() {
+      totalCountEl.textContent = allSubmissions.length;
+      pendingCountEl.textContent = allSubmissions.filter(s => s.status === 'pending').length;
+      approvedCountEl.textContent = allSubmissions.filter(s => s.status === 'approved').length;
+      rejectedCountEl.textContent = allSubmissions.filter(s => s.status === 'rejected').length;
+    }
+
+    // جەدۋەلنى سىزىش
+    function renderTable() {
+      let filtered = allSubmissions;
+      if (currentFilter !== 'all') {
+        filtered = allSubmissions.filter(s => s.status === currentFilter);
+      }
+
+      if (filtered.length === 0) {
+        submissionsTableBody.innerHTML = `
+          <tr><td colspan="8" class="p-8 text-center text-slate-500">ھېچقانداق ئۇچۇر تېپىلمىدى.</td></tr>
+        `;
+        return;
+      }
+
+      submissionsTableBody.innerHTML = filtered.map(item => {
+        let statusBadge = '';
+        if (item.status === 'approved') {
+          statusBadge = '<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">✅ تەستىقلاندى</span>';
+        } else if (item.status === 'rejected') {
+          statusBadge = '<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">❌ رەت قىلىندى</span>';
+        } else {
+          statusBadge = '<span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40">⏳ كۈتۈلمەكتە</span>';
+        }
+
+        const dateStr = item.created_at ? new Date(item.created_at).toLocaleString('ug-CN', { timeZone: 'Asia/Urumqi' }) : '-';
+        const imgHtml = item.screenshot_url 
+          ? `<img src="${item.screenshot_url}" onclick="viewLargeImage('${item.screenshot_url}')" class="w-12 h-12 object-cover rounded-lg border border-slate-700 cursor-pointer hover:scale-105 transition-transform" title="چوڭ كۆرۈش ئۈچۈن چېكىڭ">`
+          : '<span class="text-slate-600">سۈرەت يوق</span>';
+
+        return `
+          <tr class="hover:bg-slate-900/60 transition-colors">
+            <td class="p-3 text-center text-slate-500 font-mono">#${item.id}</td>
+            <td class="p-3 font-mono font-bold text-amber-300">${item.pubg_id}</td>
+            <td class="p-3 font-semibold text-slate-100">${Number(item.amount).toLocaleString()}</td>
+            <td class="p-3">${imgHtml}</td>
+            <td class="p-3 text-slate-400">${item.contact_info || '<span class="text-slate-600">-</span>'}</td>
+            <td class="p-3 text-slate-400 text-xs font-mono">${dateStr}</td>
+            <td class="p-3 text-center">${statusBadge}</td>
+            <td class="p-3 text-center">
+              <div class="inline-flex items-center gap-1.5">
+                <button onclick="updateSubmissionStatus(${item.id}, 'approved')" class="px-2.5 py-1 rounded-lg bg-emerald-600/80 hover:bg-emerald-600 text-white text-xs font-bold transition-all" title="تەستىقلاش">
+                  تەستىق
+                </button>
+                <button onclick="updateSubmissionStatus(${item.id}, 'rejected')" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white text-xs font-bold transition-all" title="رەت قىلىش">
+                  رەت
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ھالەتنى يېڭىلاش
+    window.updateSubmissionStatus = async function(id, newStatus) {
+      const confirmText = newStatus === 'approved' ? 'بۇ نۇپۇزنى تەستىقلامسىز؟' : 'بۇ نۇپۇزنى رەت قىلامسىز؟';
+      if (!confirm(confirmText)) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from('popularity_submissions')
+          .update({ status: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', id);
+
+        if (error) throw error;
+
+        // يەرلىك سانلىق مەلۇماتنى يېڭىلاش
+        const item = allSubmissions.find(s => s.id === id);
+        if (item) item.status = newStatus;
+
+        updateStats();
+        renderTable();
+      } catch (err) {
+        alert('ھالەتنى يېڭىلاش مەغلۇپ بولدى: ' + err.message);
+      }
+    };
+
+    // چوڭ سۈرەت كۆرسىتىش
+    window.viewLargeImage = function(url) {
+      modalImg.src = url;
+      downloadImgLink.href = url;
+      imageModal.classList.remove('hidden');
+      imageModal.classList.add('flex');
+    };
+
+    closeImageModalBtn.addEventListener('click', () => {
+      imageModal.classList.add('hidden');
+      imageModal.classList.remove('flex');
+    });
+
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        imageModal.classList.add('hidden');
+        imageModal.classList.remove('flex');
+      }
+    });
+
+    // ھالەت سۈزگۈچلەر
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('bg-amber-500', 'text-slate-950', 'font-bold');
+          b.classList.add('bg-slate-800', 'text-slate-300');
+        });
+        btn.classList.remove('bg-slate-800', 'text-slate-300');
+        btn.classList.add('bg-amber-500', 'text-slate-950', 'font-bold');
+
+        currentFilter = btn.getAttribute('data-status');
+        renderTable();
+      });
+    });
+
+    refreshBtn.addEventListener('click', loadSubmissions);
+  </script>
+</body>
+</html>
