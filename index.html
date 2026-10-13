@@ -87,6 +87,27 @@
     .animate-float-4 { animation: floatReverse 4.2s ease-in-out infinite 0.5s; }
     .animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
     .card-animated-border { animation: borderGlowPulse 4s ease-in-out infinite; }
+
+    /* كىچىك بەلگىلەرنىڭ ئەركىن مىدىرلاش ئانېماتسىيەلىرى */
+    @keyframes wiggleIcon {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(-12deg) scale(1.15); }
+      40% { transform: rotate(10deg) scale(1.12); }
+      60% { transform: rotate(-6deg) scale(1.08); }
+      80% { transform: rotate(4deg) scale(1.03); }
+    }
+    @keyframes bounceIcon {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-4px) scale(1.12); }
+    }
+    @keyframes spinSlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .icon-wiggle { display: inline-block; animation: wiggleIcon 2.5s ease-in-out infinite; }
+    .icon-bounce { display: inline-block; animation: bounceIcon 1.8s ease-in-out infinite; }
+    .icon-spin-slow { display: inline-block; animation: spinSlow 8s linear infinite; }
   </style>
 </head>
 <body class="text-slate-200 min-h-screen flex flex-col items-center justify-start p-4 pb-12 antialiased selection:bg-amber-500 selection:text-black relative">
@@ -142,7 +163,10 @@
       <!-- 1. PUBG ID كىرگۈزۈش -->
       <div>
         <label for="pubgId" class="block text-sm font-semibold text-amber-300/90 mb-2 flex items-center justify-between">
-          <span>🎮 PUBG ئويۇن كىملىكى (UID)</span>
+          <span class="flex items-center gap-1.5">
+            <span class="icon-wiggle text-base">🎮</span>
+            <span>PUBG ئويۇن كىملىكى (UID)</span>
+          </span>
           <span class="text-xs text-rose-400">* پەقەت سان</span>
         </label>
         <div class="relative">
@@ -155,7 +179,7 @@
             required
             class="w-full bg-slate-900/90 border border-slate-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 rounded-xl px-4 py-3.5 text-base text-amber-100 placeholder-slate-500 transition-all duration-200 outline-none font-mono text-left"
           >
-          <div class="absolute left-3 top-3.5 text-slate-500 pointer-events-none text-sm">
+          <div class="absolute left-3 top-3.5 text-slate-500 pointer-events-none text-sm icon-bounce">
             🆔
           </div>
         </div>
@@ -195,7 +219,7 @@
             min="100"
             class="w-full bg-slate-900/90 border border-slate-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 rounded-xl px-4 py-3.5 text-base text-amber-100 placeholder-slate-500 transition-all duration-200 outline-none font-mono text-left"
           >
-          <div class="absolute left-3 top-3.5 text-slate-500 pointer-events-none text-sm">
+          <div class="absolute left-3 top-3.5 text-slate-500 pointer-events-none text-sm icon-spin-slow">
             ✨
           </div>
         </div>
@@ -204,13 +228,16 @@
       <!-- 3. ئىسپات سۈرىتى يۈكلەش (Screenshot with Preview) -->
       <div>
         <label class="block text-sm font-semibold text-amber-300/90 mb-2 flex items-center justify-between">
-          <span>📸 ئەۋەتكەنلىك ئىسپات رەسىمى</span>
+          <span class="flex items-center gap-1.5">
+            <span class="icon-wiggle text-base">📸</span>
+            <span>ئەۋەتكەنلىك ئىسپات رەسىمى</span>
+          </span>
           <span class="text-xs text-rose-400">* تەلەپ قىلىنىدۇ</span>
         </label>
 
         <!-- يۈكلەش قۇتىسى -->
         <label for="screenshot" class="group flex flex-col items-center justify-center border-2 border-dashed border-slate-700 group-hover:border-amber-400/60 rounded-2xl p-5 bg-slate-900/50 hover:bg-slate-900/90 cursor-pointer transition-all duration-200">
-          <div class="w-12 h-12 mb-2 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+          <div class="w-12 h-12 mb-2 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform icon-bounce">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
@@ -232,7 +259,10 @@
       <!-- 4. ئالاقىلىشىش ئۇچۇرى (ئىختىيارىي) -->
       <div>
         <label for="contact" class="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
-          <span>📱 ئالاقىلىشىش ئۇچۇرى (تاللاپ كىرگۈزۈلىدۇ)</span>
+          <span class="flex items-center gap-1.5">
+            <span class="icon-wiggle text-base">📱</span>
+            <span>ئالاقىلىشىش ئۇچۇرى (تاللاپ كىرگۈزۈلىدۇ)</span>
+          </span>
           <span class="text-xs text-slate-500">ئىختىيارىي</span>
         </label>
         <input 
@@ -253,7 +283,10 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
         </svg>
-        <span id="btnText">🚀 نۇپۇز ئۇچۇرىنى تاپشۇرۇش</span>
+        <span id="btnText" class="flex items-center gap-1.5">
+          <span class="icon-bounce text-lg">🚀</span>
+          <span>نۇپۇز ئۇچۇرىنى تاپشۇرۇش</span>
+        </span>
       </button>
 
     </form>
